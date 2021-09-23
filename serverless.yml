@@ -1,0 +1,61 @@
+service: pytorch-aws-lambda
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: us-east-1
+  timeout: 60
+  frameworkVersion: '2'
+  environment:
+    # stage: ${opt:stage}
+    S3_BUCKET: sgm-models
+    MODEL_PATH: ./mobilenet_v2.pt
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - s3:getObject
+      Resource: arn:aws:s3:::sgm-models/*
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    zip: true
+    slim: true
+    strip: false
+    noDeploy:
+      - docutils
+      - jmespath
+      - pip
+      - python-dateutil
+      - setuptools
+      - six
+      - tensorboard
+    useStaticCache: true
+    useDownloadCache: true
+    cacheLocation: "./cache"
+package:
+  individually: false
+  exclude:
+    - package.json
+    - package-log.json
+    - node_modules/**
+    - cache/**
+    - test/**
+    - __pycache__/**
+    - .pytest_cache/**
+    - model/**
+
+functions:
+  classify_image:
+    handler: handler.classify_image
+    memorySize: 3008
+    timeout: 60
+    events:
+      - http:
+          path: clasify
+          method: post
+          cors: true
+
+plugins:
+  - serverless-python-requirements
