@@ -2,9 +2,8 @@
     "name": "pytorch-aws-lambda",
     "description": "",
     "version": "0.1.0",
-    "dependencies": {},
     "scripts": {
-      "deploy": "serverless deploy"
+        "deploy": "serverless deploy"
     },
     "devDependencies": {
         "serverless": "^2.59.0",
